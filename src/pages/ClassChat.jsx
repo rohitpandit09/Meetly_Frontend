@@ -33,35 +33,15 @@ const ClassChat = () => {
 
     setSocket(newSocket);
 
-    newSocket.emit("join-room", {
-      meetingCode: id,
-      user: {
-        name: user?.name,
-        role: user?.role,
-      },
+    
+    newSocket.on("dashboard-users", (users) => {
+      setParticipants(users);
     });
-
-    // when someone joins
-    newSocket.on("user-joined", (newUser) => {
-      if (!newUser?.name) return;
-
-      setParticipants((prev) => {
-        const exists = prev.find((p) => p.name === newUser.name);
-        if (exists) return prev;
-
-        return [
-          ...prev,
-          {
-            ...newUser,
-            online: true,
-          },
-        ];
-      });
-    });
+    
 
     // join room
 
-    newSocket.emit("join-room", {
+    newSocket.emit("join-dashboard", {
       meetingCode: id,
       user: {
         name: user?.name,
@@ -69,19 +49,7 @@ const ClassChat = () => {
       },
     });
 
-    setParticipants((prev) => {
-      const exists = prev.find((p) => p.name === user.name);
-      if (exists) return prev;
-
-      return [
-        ...prev,
-        {
-          name: user.name,
-          role: user.role,
-          online: true,
-        },
-      ];
-    });
+    
 
 
 
@@ -118,17 +86,7 @@ const ClassChat = () => {
     return () => newSocket.disconnect();
   }, [id, user]);
 
-  useEffect(() => {
-    if (user) {
-      setParticipants([
-        {
-          name: user.name,
-          role: user.role,
-          online: true,
-        },
-      ]);
-    }
-  }, [user]);
+  
 
   useEffect(() => {
 
@@ -242,7 +200,7 @@ const handleSend = async (e) => {
               <p className="text-sm text-muted-foreground mt-1">{classData.description}</p>
               <div className="flex items-center gap-3 mt-2">
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Users className="w-3 h-3" /> {classData.members?.length  || 1} members · {onlineCount + 1} online
+                  <Users className="w-3 h-3" /> {participants.length} members · {participants.filter(p => p.online).length} online
                 </span>
                 <button onClick={copyCode} className="text-xs flex items-center gap-1 text-primary hover:underline">
                   {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
