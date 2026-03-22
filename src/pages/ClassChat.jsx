@@ -199,7 +199,7 @@ const handleSend = async (e) => {
                       });
 
                       // Teacher also joins
-                      navigate(`/meeting/${classData.meetingCode}`);
+                      
 
                       navigate(`/meeting/${classData.meetingCode}`);
                     } catch (error) {
