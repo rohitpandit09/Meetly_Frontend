@@ -27,7 +27,7 @@ const Classroom = () => {
     const fetchAssignments = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3000/api/assignments/${id}`
+          `https://meetly-backend-1.onrender.com/api/assignments/${id}`
         );
 
         setAssignments(res.data);
@@ -68,7 +68,7 @@ const Classroom = () => {
       console.log("Sending:", title, desc, dueDate, file);
 
      await axios.post(
-      "http://localhost:3000/api/assignments/create",
+      "https://meetly-backend-1.onrender.com/api/assignments/create",
       formData,
       {
         headers: {
@@ -79,7 +79,7 @@ const Classroom = () => {
 
       // refresh assignments
       const res = await axios.get(
-        `http://localhost:3000/api/assignments/${_id}`
+        `https://meetly-backend-1.onrender.com/api/assignments/${_id}`
       );
       setAssignments(res.data);
 
@@ -95,7 +95,7 @@ const Classroom = () => {
 
   const handleSubmit = async (assignmentId) => {
     try {
-      await axios.post("http://localhost:3000/api/assignments/submit", {
+      await axios.post("https://meetly-backend-1.onrender.com/api/assignments/submit", {
         assignmentId,
         studentId: user.id,
         studentName: user.name
@@ -103,7 +103,7 @@ const Classroom = () => {
 
       // refresh
       const res = await axios.get(
-        `http://localhost:3000/api/assignments/${id}`
+        `https://meetly-backend-1.onrender.com/api/assignments/${id}`
       );
       setAssignments(res.data);
 
@@ -175,7 +175,7 @@ const Classroom = () => {
                       <p className="text-sm text-muted-foreground mt-1">{a.description}</p>
                       {a.fileUrl && (
                         <a
-                          href={`http://localhost:3000/uploads/${a.fileUrl}`}
+                          href={`https://meetly-backend-1.onrender.com/uploads/${a.fileUrl}`}
                           download
                           target="_blank"
                           rel="noopener noreferrer"

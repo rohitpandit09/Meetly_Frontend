@@ -17,7 +17,7 @@ const login = async (email, password, role) => {
   try {
 
     const res = await axios.post(
-      "http://localhost:3000/api/auth/login",
+      "https://meetly-backend-1.onrender.com/api/auth/login",
 
         {
           email,
@@ -58,7 +58,7 @@ const backendRole = role === "teacher" ? "host" : "user";
 try {
 
   const res = await axios.post(
-    "http://localhost:3000/api/auth/signup",
+    "https://meetly-backend-1.onrender.com/api/auth/signup",
     {
       name,
       email,

@@ -27,7 +27,7 @@ const PollCreate = () => {
       return;
     }
 
-    const socket = io("http://localhost:3000");
+    const socket = io("https://meetly-backend-1.onrender.com");
     
 
 

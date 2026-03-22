@@ -29,7 +29,7 @@ const ClassChat = () => {
   const [unreadNotices, setUnreadNotices] = useState(0);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:3000");
+    const newSocket = io("https://meetly-backend-1.onrender.com");
 
     setSocket(newSocket);
 
@@ -137,7 +137,7 @@ const ClassChat = () => {
         try {
 
           const res = await axios.get(
-            `http://localhost:3000/api/meetings/${id}`
+            `https://meetly-backend-1.onrender.com/api/meetings/${id}`
           );
 
           setMessages(res.data.messages || []);
@@ -181,7 +181,7 @@ const handleSend = async (e) => {
   };
 
   // ✅ save in DB
-  await axios.post("http://localhost:3000/api/meetings/message", {
+  await axios.post("https://meetly-backend-1.onrender.com/api/meetings/message", {
     meetingCode: id,
     message: msg,
   });
@@ -209,7 +209,7 @@ const handleSend = async (e) => {
     isNotice: true,
   };
 
-  await axios.post("http://localhost:3000/api/meetings/message", {
+  await axios.post("https://meetly-backend-1.onrender.com/api/meetings/message", {
     meetingCode: id,
     message: notice,
   });
@@ -255,7 +255,7 @@ const handleSend = async (e) => {
                 try {
 
                   const res = await axios.post(
-                    `http://localhost:3000/api/meetings/start`,
+                    `https://meetly-backend-1.onrender.com/api/meetings/start`,
                     {
                       meetingCode: classData.meetingCode
                     }

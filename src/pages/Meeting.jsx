@@ -94,7 +94,7 @@ const Meeting = () => {
     try {
 
       const res = await axios.get(
-        `http://localhost:3000/api/meetings/${id}`
+        `https://meetly-backend-1.onrender.com/api/meetings/${id}`
       );
 
       if (!res.data || res.data.isLive===false) {
@@ -121,7 +121,7 @@ const Meeting = () => {
 }, [id, navigate]);
 
 useEffect(() => {
-  const newSocket = io("http://localhost:3000");
+  const newSocket = io("https://meetly-backend-1.onrender.com");
 
   newSocket.on("all-users", (users) => {
       users.forEach(({ id }) => {
@@ -298,7 +298,7 @@ useEffect(() => {
   const fetchChats = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/api/chat/${id}`
+        `https://meetly-backend-1.onrender.com/api/chat/${id}`
       );
 
       setChatMessages(res.data);
@@ -314,7 +314,7 @@ useEffect(() => {
   const fetchActivePoll = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/api/poll/${id}`
+        `https://meetly-backend-1.onrender.com/api/poll/${id}`
       );
 
       if (res.data) {
@@ -898,7 +898,7 @@ useEffect(() => {
           <MoreVertical className="w-5 h-5 meeting-text" />
         </button>
         <button onClick={async () =>{
-          // await axios.delete(`http://localhost:3000/api/chat/${id}`);
+          // await axios.delete(`https://meetly-backend-1.onrender.com/api/chat/${id}`);
           // socket.disconnect();
           navigate('/');
         }} className="w-14 h-12 rounded-full bg-destructive flex items-center justify-center hover:opacity-90 transition-all ml-4">

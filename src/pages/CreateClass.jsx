@@ -22,7 +22,7 @@ const CreateClass = () => {
   try {
 
     const res = await axios.post(
-      "http://localhost:3000/api/meetings/create",
+      "https://meetly-backend-1.onrender.com/api/meetings/create",
       {
         name,
         description,
