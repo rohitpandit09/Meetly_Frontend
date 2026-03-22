@@ -60,20 +60,7 @@ const ClassChat = () => {
 }, [id, user]);
 
 
-  useEffect(() => {
-    if (participants.length === 0 && user) {
-      setParticipants([
-        {
-          name: user.name,
-          role: user.role,
-          online: true,
-        },
-      ]);
-    }
-  }, [user, participants.length]);
-
   
-
   useEffect(() => {
 
       const fetchClass = async () => {
@@ -195,29 +182,27 @@ const handleSend = async (e) => {
               </div>
             </div>
             <div className="flex gap-2">
-              <button onClick={async () => {
-                try {
+              {isTeacher && (
+                <button
+                  onClick={async () => {
+                    try {
+                      const res = await axios.post(
+                        `https://meetly-backend-1.onrender.com/api/meetings/start`,
+                        {
+                          meetingCode: classData.meetingCode
+                        }
+                      );
 
-                  const res = await axios.post(
-                    `https://meetly-backend-1.onrender.com/api/meetings/start`,
-                    {
-                      meetingCode: classData.meetingCode
+                      navigate(`/meeting/${classData.meetingCode}`);
+                    } catch (error) {
+                      alert("Meeting failed to start");
                     }
-                  );
-
-                  console.log("Start meeting response:", res.data);
-
-                  navigate(`/meeting/${classData.meetingCode}`);
-
-                } catch (error) {
-
-                  console.error("Start meeting error:", error.response?.data || error);
-                  alert("Meeting failed to start");
-
-                }
-              }} className="px-4 py-2 rounded-lg gradient-primary text-primary-foreground text-sm font-medium hover:opacity-90 flex items-center gap-2">
-                <Video className="w-4 h-4" /> Start Meeting
-              </button>
+                  }}
+                  className="px-4 py-2 rounded-lg gradient-primary text-primary-foreground text-sm font-medium hover:opacity-90 flex items-center gap-2"
+                >
+                  <Video className="w-4 h-4" /> Start Meeting
+                </button>
+              )}
               <button onClick={() => navigate(`/classroom/${classData.id}`)} className="px-4 py-2 rounded-lg bg-muted text-foreground text-sm font-medium hover:bg-accent transition-colors flex items-center gap-2">
                 <BookOpen className="w-4 h-4" /> Classroom
               </button>
