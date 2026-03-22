@@ -28,19 +28,13 @@ const ClassChat = () => {
   const [unreadChat, setUnreadChat] = useState(0);
   const [unreadNotices, setUnreadNotices] = useState(0);
 
-  useEffect(() => {
-    const newSocket = io("https://meetly-backend-1.onrender.com");
+ useEffect(() => {
+  const newSocket = io("https://meetly-backend-1.onrender.com");
 
-    setSocket(newSocket);
+  newSocket.on("connect", () => {
+    console.log("Socket connected:", newSocket.id);
 
-    
-    newSocket.on("dashboard-users", (users) => {
-      setParticipants(users);
-    });
-    
-
-    // join room
-
+    // JOIN ONLY AFTER CONNECT
     newSocket.emit("join-dashboard", {
       meetingCode: id,
       user: {
@@ -48,43 +42,35 @@ const ClassChat = () => {
         role: user?.role,
       },
     });
-
-    
-
-
-
-    // receive message
-    newSocket.on("receive-message", (msg) => {
-      console.log("Received message:", msg);
-      setMessages((prev) => {
-          const exists = prev.find(
-            (m) =>
-              m.content === msg.content &&
-              m.sender === msg.sender &&
-              m.time === msg.time
-          );
-          if (exists) return prev;
-          return [...prev, msg];
-      });
-      if (msg.isNotice) {
-        if (activeTab !== "notices") {
-          setUnreadNotices((prev) => prev + 1);
-        }
-      } else {
-        if (activeTab !== "chat") {
-          setUnreadChat((prev) => prev + 1);
-        }
-      }
-    });
-
-    
-
-  newSocket.on("connect", () => {
-    console.log("Socket connected:", newSocket.id);
   });
 
-    return () => newSocket.disconnect();
-  }, [id, user]);
+  newSocket.on("dashboard-users", (users) => {
+    console.log("Received users:", users);
+    setParticipants(users);
+  });
+
+  newSocket.on("receive-message", (msg) => {
+    console.log("Received message:", msg);
+    setMessages((prev) => [...prev, msg]);
+  });
+
+  setSocket(newSocket);
+
+  return () => newSocket.disconnect();
+}, [id, user]);
+
+
+  useEffect(() => {
+    if (participants.length === 0 && user) {
+      setParticipants([
+        {
+          name: user.name,
+          role: user.role,
+          online: true,
+        },
+      ]);
+    }
+  }, [user, participants.length]);
 
   
 
