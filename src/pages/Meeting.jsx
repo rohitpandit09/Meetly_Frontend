@@ -162,7 +162,9 @@ useEffect(() => {
   });
 
   newSocket.on("ice-candidate", ({ from, candidate }) => {
-    peersRef.current[from]?.addIceCandidate(candidate);
+    if(peersRef.current[from]){
+      peersRef.current[from].addIceCandidate(candidate);
+    }
   });
 
   setSocket(newSocket);
