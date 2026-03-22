@@ -7,11 +7,13 @@ import { Send, Pin, Users, Bell, BookOpen, Video, Copy, Check } from "lucide-rea
 import axios from "axios";
 import { useEffect } from "react";
 import {io} from "socket.io-client";
+import { useRef } from "react";
 
 const ClassChat = () => {
   const { id } = useParams();
   const { user } = useAuth(); 
   const navigate = useNavigate();
+  const socketRef = useRef(null);
   const [message, setMessage] = useState("");
   const [activeTab, setActiveTab] = useState("chat");
   const [copied, setCopied] = useState(false);
@@ -47,6 +49,12 @@ const ClassChat = () => {
   newSocket.on("dashboard-users", (users) => {
     console.log("Received users:", users);
     setParticipants(users);
+  });
+
+  newSocket.on("meeting-started", ({ meetingCode }) => {
+    console.log("Meeting started received");
+
+    navigate(`/meeting/${meetingCode}`);
   });
 
   newSocket.on("receive-message", (msg) => {
@@ -186,12 +194,12 @@ const handleSend = async (e) => {
                 <button
                   onClick={async () => {
                     try {
-                      const res = await axios.post(
-                        `https://meetly-backend-1.onrender.com/api/meetings/start`,
-                        {
-                          meetingCode: classData.meetingCode
-                        }
-                      );
+                      socketRef.current.emit("start-meeting", {
+                        meetingCode: classData.meetingCode
+                      });
+
+                      // Teacher also joins
+                      navigate(`/meeting/${classData.meetingCode}`);
 
                       navigate(`/meeting/${classData.meetingCode}`);
                     } catch (error) {
