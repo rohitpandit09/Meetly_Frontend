@@ -33,7 +33,7 @@ const ClassChat = () => {
 
  useEffect(() => {
   const newSocket = io("https://meetly-backend-1.onrender.com", {
-    transports: ["websocket", "polling"],
+    transports: [ "polling"],
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
@@ -95,7 +95,7 @@ const ClassChat = () => {
   });
 
   return () => newSocket.disconnect();
-}, [id, user]);
+}, []);
 
   
   useEffect(() => {
