@@ -56,13 +56,14 @@ const ClassChat = () => {
     setParticipants(users);
   });
 
-  newSocket.off("meeting-started");
+  
 
   // MEETING START EVENT (OUTSIDE CONNECT)
   newSocket.on("meeting-started", ({ meetingCode }) => {
     console.log("Meeting started received");
     
     setMeetingStarted(true);
+    localStorage.setItem("meetingStarted", "true");
   });
 
   
@@ -116,7 +117,7 @@ const ClassChat = () => {
     useEffect(() => {
       if (localStorage.getItem("meetingStarted") === "true") {
         setMeetingStarted(true);
-        localStorage.setItem("meetingStarted", "true");
+        
       }
     }, []);
 
