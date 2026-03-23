@@ -79,7 +79,7 @@ const Classroom = () => {
 
       // refresh assignments
       const res = await axios.get(
-        `https://meetly-backend-1.onrender.com/api/assignments/${_id}`
+        `https://meetly-backend-1.onrender.com/api/assignments/${id}`
       );
       setAssignments(res.data);
 
@@ -95,17 +95,33 @@ const Classroom = () => {
 
   const handleSubmit = async (assignmentId) => {
     try {
-      await axios.post("https://meetly-backend-1.onrender.com/api/assignments/submit", {
-        assignmentId,
-        studentId: user.id,
-        studentName: user.name
-      });
+      const formData = new FormData();
+
+      formData.append("assignmentId", assignmentId);
+      formData.append("studentId", user.id);
+      formData.append("studentName", user.name);
+
+      if (file) {
+        formData.append("file", file);
+      }
+
+      await axios.post(
+        "https://meetly-backend-1.onrender.com/api/assignments/submit",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       // refresh
       const res = await axios.get(
         `https://meetly-backend-1.onrender.com/api/assignments/${id}`
       );
+
       setAssignments(res.data);
+      setFile(null);
 
     } catch (error) {
       console.error("Submit error:", error);
@@ -217,7 +233,17 @@ const Classroom = () => {
                                 )}
                               </td>
                               <td className="py-2.5 text-muted-foreground">{s.time || "-"}</td>
-                              <td className="py-2.5 text-primary text-xs">{s.fileName || "-"}</td>
+                              <td>
+                                {s.fileName ? (
+                                  <a
+                                    href={`https://meetly-backend-1.onrender.com/uploads/${s.fileName}`}
+                                    target="_blank"
+                                    className="text-primary text-xs underline"
+                                  >
+                                    View File
+                                  </a>
+                                ) : "-"}
+                              </td>
                             </tr>
                           ))}
                         </tbody>
@@ -226,11 +252,24 @@ const Classroom = () => {
                   ) : (
                     <div>
                       {a.submissions.find((s) => s.studentId === user.id)?.submitted ? (
-                        <p className="text-sm text-green-600 flex items-center gap-1"><CheckCircle className="w-4 h-4" /> Submitted</p>
+                        <p className="text-sm text-green-600 flex items-center gap-1">
+                          <CheckCircle className="w-4 h-4" /> Submitted
+                        </p>
                       ) : (
-                        <button onClick={() => handleSubmit(a.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90">
-                          <Upload className="w-4 h-4" /> Submit Assignment
-                        </button>
+                        <div className="flex flex-col gap-2">
+                          <input
+                            type="file"
+                            onChange={(e) => setFile(e.target.files[0])}
+                            className="text-sm"
+                          />
+
+                          <button
+                            onClick={() => handleSubmit(a.id)}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90"
+                          >
+                            <Upload className="w-4 h-4" /> Submit Assignment
+                          </button>
+                        </div>
                       )}
                     </div>
                   )}
