@@ -113,6 +113,13 @@ const ClassChat = () => {
 
     }, [id]);
 
+    useEffect(() => {
+      if (localStorage.getItem("meetingStarted") === "true") {
+        setMeetingStarted(true);
+        localStorage.setItem("meetingStarted", "true");
+      }
+    }, []);
+
   if (!user) { navigate("/login"); return null; }
   if (!classData) return (
     <div className="min-h-screen flex items-center justify-center bg-background pt-16">
