@@ -19,6 +19,7 @@ const ClassChat = () => {
   const [copied, setCopied] = useState(false);
 
   const [classData, setClassData] = useState(null);
+  const [meetingStarted, setMeetingStarted] = useState(false);
 
   const [socket, setSocket] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -59,6 +60,7 @@ const ClassChat = () => {
   newSocket.on("meeting-started", ({ meetingCode }) => {
     console.log("Meeting started received");
     navigate(`/meeting/${meetingCode}`);
+    setMeetingStarted(true);
   });
 
   //  CHAT
@@ -192,7 +194,7 @@ const handleSend = async (e) => {
               </div>
             </div>
             <div className="flex gap-2">
-              {isTeacher && (
+              {isTeacher  && (
                 <button
                   onClick={async () => {
                     
@@ -214,6 +216,15 @@ const handleSend = async (e) => {
                   className="px-4 py-2 rounded-lg gradient-primary text-primary-foreground text-sm font-medium hover:opacity-90 flex items-center gap-2"
                 >
                   <Video className="w-4 h-4" /> Start Meeting
+                </button>
+              )}
+
+              {!isTeacher && meetingStarted && (
+                <button
+                  onClick={() => navigate(`/meeting/${classData.meetingCode}`)}
+                  className="px-4 py-2 rounded-lg bg-green-500 text-white text-sm font-medium hover:opacity-90 flex items-center gap-2"
+                >
+                  <Video className="w-4 h-4" /> Join Meeting
                 </button>
               )}
               <button onClick={() => navigate(`/classroom/${classData.id}`)} className="px-4 py-2 rounded-lg bg-muted text-foreground text-sm font-medium hover:bg-accent transition-colors flex items-center gap-2">

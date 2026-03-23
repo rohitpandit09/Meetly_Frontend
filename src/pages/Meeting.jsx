@@ -27,10 +27,11 @@ const Meeting = () => {
   const [cameraStream, setCameraStream] = useState(null);
   const [screenStream, setScreenStream] = useState(null);
   const [timeLeft , setTimeLeft] = useState(null);  
+  const [meetingStarted, setMeetingStarted] = useState(false);
 
   const [activePoll, setActivePoll] = useState(null);
 
-  const [meetingData, setMeetingData] = useState(null);
+  
   const [loading, setLoading] = useState(true);
 
   const [socket, setSocket] = useState(null);
