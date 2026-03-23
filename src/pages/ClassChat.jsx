@@ -56,12 +56,17 @@ const ClassChat = () => {
     setParticipants(users);
   });
 
+  newSocket.off("meeting-started");
+
   // MEETING START EVENT (OUTSIDE CONNECT)
   newSocket.on("meeting-started", ({ meetingCode }) => {
     console.log("Meeting started received");
-    navigate(`/meeting/${meetingCode}`);
+    
     setMeetingStarted(true);
   });
+
+  
+
 
   //  CHAT
   newSocket.on("receive-message", (msg) => {
