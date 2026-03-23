@@ -32,7 +32,20 @@ const ClassChat = () => {
   const [unreadNotices, setUnreadNotices] = useState(0);
 
  useEffect(() => {
-  const newSocket = io("https://meetly-backend-1.onrender.com");
+  const newSocket = io("https://meetly-backend-1.onrender.com", {
+    transports: ["websocket", "polling"],
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+  });
+
+  newSocket.on("connect", () => {
+    console.log("✅ Socket connected:", newSocket.id);
+  });
+
+  newSocket.on("disconnect", () => {
+    console.log("❌ Socket disconnected");
+  });
 
   // VERY IMPORTANT
   socketRef.current = newSocket;
@@ -218,22 +231,17 @@ const handleSend = async (e) => {
             <div className="flex gap-2">
               {isTeacher  && (
                 <button
-                  onClick={async () => {
-                    
+                  onClick={() => {
+                    if (!socketRef.current || !socketRef.current.connected) {
+                      alert("Socket not connected yet. Please wait...");
+                      return;
+                    }
 
-                      if(!socketRef.current){
-                        console.log("Socket not ready");
-                        return;
-                      }
-                      socketRef.current.emit("start-meeting", {
-                        meetingCode: classData.meetingCode
-                      });
+                    socketRef.current.emit("start-meeting", {
+                      meetingCode: classData.meetingCode
+                    });
 
-                      // Teacher also joins
-                      
-
-                      navigate(`/meeting/${classData.meetingCode}`);
-                    
+                    navigate(`/meeting/${classData.meetingCode}`);
                   }}
                   className="px-4 py-2 rounded-lg gradient-primary text-primary-foreground text-sm font-medium hover:opacity-90 flex items-center gap-2"
                 >
