@@ -73,7 +73,7 @@ const ClassChat = () => {
     console.log("Meeting started received");
     
     setMeetingStarted(true);
-    localStorage.setItem("meetingStarted", "true");
+    
   });
 
   
@@ -124,12 +124,7 @@ const ClassChat = () => {
 
     }, [id]);
 
-    useEffect(() => {
-      if (localStorage.getItem("meetingStarted") === "true") {
-        setMeetingStarted(true);
-        
-      }
-    }, []);
+    
 
   if (!user) { navigate("/login"); return null; }
   if (!classData) return (
