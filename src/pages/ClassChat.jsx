@@ -33,10 +33,13 @@ const ClassChat = () => {
  useEffect(() => {
   const newSocket = io("https://meetly-backend-1.onrender.com");
 
+  // VERY IMPORTANT
+  socketRef.current = newSocket;
+
   newSocket.on("connect", () => {
     console.log("Socket connected:", newSocket.id);
 
-    // JOIN ONLY AFTER CONNECT
+    // JOIN ROOM
     newSocket.emit("join-dashboard", {
       meetingCode: id,
       user: {
@@ -46,27 +49,26 @@ const ClassChat = () => {
     });
   });
 
+  //  USERS UPDATE
   newSocket.on("dashboard-users", (users) => {
     console.log("Received users:", users);
     setParticipants(users);
   });
 
+  // MEETING START EVENT (OUTSIDE CONNECT)
   newSocket.on("meeting-started", ({ meetingCode }) => {
     console.log("Meeting started received");
-
     navigate(`/meeting/${meetingCode}`);
   });
 
+  //  CHAT
   newSocket.on("receive-message", (msg) => {
     console.log("Received message:", msg);
     setMessages((prev) => [...prev, msg]);
   });
 
-  setSocket(newSocket);
-
   return () => newSocket.disconnect();
 }, [id, user]);
-
 
   
   useEffect(() => {
@@ -193,7 +195,12 @@ const handleSend = async (e) => {
               {isTeacher && (
                 <button
                   onClick={async () => {
-                    try {
+                    
+
+                      if(!socketRef.current){
+                        console.log("Socket not ready");
+                        return;
+                      }
                       socketRef.current.emit("start-meeting", {
                         meetingCode: classData.meetingCode
                       });
@@ -202,9 +209,7 @@ const handleSend = async (e) => {
                       
 
                       navigate(`/meeting/${classData.meetingCode}`);
-                    } catch (error) {
-                      alert("Meeting failed to start");
-                    }
+                    
                   }}
                   className="px-4 py-2 rounded-lg gradient-primary text-primary-foreground text-sm font-medium hover:opacity-90 flex items-center gap-2"
                 >
