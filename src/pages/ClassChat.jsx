@@ -37,20 +37,42 @@ const ClassChat = () => {
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
+    forceNew : true
   });
 
 
-  newSocket.on("disconnect", () => {
-    console.log("❌ Socket disconnected");
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+
+    for (const room in roomUsers) {
+      roomUsers[room] = roomUsers[room].filter(
+        (user) => user.id !== socket.id
+      );
+
+      io.to(room).emit("dashboard-users", roomUsers[room]);
+    }
   });
 
   // VERY IMPORTANT
   socketRef.current = newSocket;
 
   newSocket.on("connect", () => {
-    console.log("Socket connected:", newSocket.id);
+    console.log("✅ Socket connected:", newSocket.id);
 
-    // JOIN ROOM
+    // 🔥 ALWAYS REJOIN
+    newSocket.emit("join-dashboard", {
+      meetingCode: id,
+      user: {
+        name: user?.name,
+        role: user?.role,
+      },
+    });
+  });
+
+  // 🔥 ALSO HANDLE RECONNECT
+  newSocket.on("reconnect", () => {
+    console.log("♻️ Reconnected");
+
     newSocket.emit("join-dashboard", {
       meetingCode: id,
       user: {
