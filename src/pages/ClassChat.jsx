@@ -90,6 +90,10 @@ const ClassChat = () => {
     
     setMeetingStarted(true);
     
+    if (user.role === "teacher") {
+      navigate(`/meeting/${meetingCode}`);
+    }
+    
   });
 
   
@@ -243,7 +247,7 @@ const handleSend = async (e) => {
                       meetingCode: classData.meetingCode
                     });
 
-                    navigate(`/meeting/${classData.meetingCode}`);
+                    
                   }}
                   className="px-4 py-2 rounded-lg gradient-primary text-primary-foreground text-sm font-medium hover:opacity-90 flex items-center gap-2"
                 >

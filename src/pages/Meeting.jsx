@@ -94,35 +94,25 @@ const Meeting = () => {
   }, []);
 
   useEffect(() => {
-  const checkMeeting = async () => {
-    try {
+  const socket = io("https://meetly-backend-1.onrender.com", {
+    transports: ["polling"],
+  });
 
-      const res = await axios.get(
-        `https://meetly-backend-1.onrender.com/api/meetings/${id}`
-      );
+  socket.emit("check-meeting-status", {
+    meetingCode: id,
+  });
 
-      if (!res.data || res.data.isLive === false) {
-        alert("Meeting not started yet");
-        navigate(`/class/${id}`);
-        return;
-      }
-
-      setMeetingData(res.data);
-
-    } catch (error) {
-
-      console.error("Meeting error:", error);
-      navigate("/");
-
-    } finally {
-
+  socket.on("meeting-status", ({ isLive }) => {
+    if (!isLive) {
+      alert("Meeting not started yet");
+      navigate(`/class/${id}`);
+    } else {
       setLoading(false);
-
     }
-  };
+  });
 
-  checkMeeting();
-}, [id, navigate]);
+  return () => socket.disconnect();
+}, [id]);
 
 useEffect(() => {
   const newSocket = io("https://meetly-backend-1.onrender.com",{
