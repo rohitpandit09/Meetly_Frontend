@@ -135,7 +135,7 @@ const handleSend = async (e) => {
   });
 
   // ✅ send via socket
-  socket.emit("send-message", {
+  socketRef.current.emit("send-message", {
     meetingCode: id,
     message: msg,
   });
@@ -162,9 +162,9 @@ const handleSend = async (e) => {
     message: notice,
   });
 
-  socket.emit("send-message", {
+  socketRef.current.emit("send-message", {
     meetingCode: id,
-    message: notice,
+    message: msg,
   });
 
   setMessage("");
