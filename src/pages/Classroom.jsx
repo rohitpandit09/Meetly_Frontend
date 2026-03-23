@@ -21,7 +21,8 @@ const Classroom = () => {
 
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [file, setFile] = useState({});
+  const [file,setFile] = useState(null);
+  const [files, setFiles] = useState({});
 
   useEffect(() => {
     const fetchAssignments = async () => {
@@ -191,12 +192,7 @@ const Classroom = () => {
                   <textarea required value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" rows={3} className="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
                   <input
                     type="file"
-                    onChange={(e) =>
-                      setFiles((prev) => ({
-                        ...prev,
-                        [a.id]: e.target.files[0],
-                      }))
-                    }
+                    onChange={(e) => setFile(e.target.files[0])}
                     className="w-full text-sm"
                   />
                   <input type="date" required value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
@@ -285,7 +281,12 @@ const Classroom = () => {
                         <div className="flex flex-col gap-2">
                           <input
                             type="file"
-                            onChange={(e) => setFile(e.target.files[0])}
+                            onChange={(e) =>
+                              setFiles((prev) => ({
+                                ...prev,
+                                [a.id]: e.target.files[0],
+                              }))
+                            }
                             className="text-sm"
                           />
 
