@@ -53,15 +53,16 @@ const ClassChat = () => {
   newSocket.on("connect", () => {
     console.log("Socket connected:", newSocket.id);
 
-    // JOIN ROOM
-    newSocket.emit("join-dashboard", {
+    // JOIN ROO
+  });
+
+  newSocket.emit("join-dashboard", {
       meetingCode: id,
       user: {
         name: user?.name,
         role: user?.role,
       },
     });
-  });
 
   //  USERS UPDATE
   newSocket.on("dashboard-users", (users) => {
@@ -98,7 +99,7 @@ const ClassChat = () => {
   });
 
   return () => newSocket.disconnect();
-}, [id, user]);
+}, []);
 
   
   useEffect(() => {
