@@ -121,7 +121,7 @@ useEffect(() => {
 
   socketRef.current = newSocket;
 
-  newSocket.on("all-users", (users) => {
+  newSocket.on("  users", (users) => {
       users.forEach(({ id }) => {
         if (id === newSocket.id) return;
 
