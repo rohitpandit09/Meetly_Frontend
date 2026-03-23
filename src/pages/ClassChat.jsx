@@ -232,7 +232,10 @@ const handleSend = async (e) => {
               {isTeacher  && (
                 <button
                   onClick={() => {
-                    if (!socketRef.current || !socketRef.current.connected) {
+
+                    console.log('Button Clicked');
+
+                    if (!socketRef.current ) {
                       alert("Socket not connected yet. Please wait...");
                       return;
                     }
