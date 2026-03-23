@@ -68,26 +68,30 @@ const Meeting = () => {
 
   useEffect(() => {
     const startCamera = async () => {
-      try {
-        if(localStream){
-          localStream.getTracks().forEach((t) => t.stop());
-        }
-        
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
+      const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
+    });
 
-        setLocalStream(stream);
-        setCameraStream(stream);
+    setLocalStream(stream);
+    setCameraStream(stream);
 
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
-        }
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = stream;
+    }
 
-      } catch (err) {
-        console.error("Camera error:", err);
-      }
+    // ✅ ADD THIS HERE
+    if (socketRef.current) {
+      socketRef.current.emit("join-room", {
+        meetingCode: id,
+        user: {
+          name: user?.name,
+          role: user?.role,
+          videoOn: true,
+          audioOn: true,
+        },
+      });
+    }
     };
 
     startCamera();
@@ -121,7 +125,7 @@ useEffect(() => {
 
   socketRef.current = newSocket;
 
-  newSocket.on("  users", (users) => {
+  newSocket.on("all-users", (users) => {
       users.forEach(({ id }) => {
         if (id === newSocket.id) return;
 
@@ -167,15 +171,7 @@ useEffect(() => {
 
   setSocket(newSocket);
 
-  newSocket.emit("join-room", {
-    meetingCode: id,
-    user: {
-      name: user?.name ,
-      role: user?.role,
-      videoOn: true,
-      audioOn: true,
-    },
-  });
+  
 
   newSocket.on("user-joined", ({ socketId, user }) => {
     setParticipants((prev) => {
@@ -402,11 +398,14 @@ useEffect(() => {
     });
 
     // add local stream safely
-    if (localStream) {
-      localStream.getTracks().forEach((track) => {
-        peer.addTrack(track, localStream);
-      });
+    if (!localStream) {
+      console.log("No stream yet")
+      return peer;
     }
+
+    localStream.getTracks().forEach((track) => {
+        peer.addTrack(track, localStream);
+    });
 
     // ICE
     peer.onicecandidate = (event) => {
