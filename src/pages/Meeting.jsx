@@ -11,6 +11,7 @@ import axios from "axios";
 import { io } from "socket.io-client";
 
 
+
 const Meeting = () => {
   const { id } = useParams();
   const { user } = useAuth();
@@ -40,6 +41,8 @@ const Meeting = () => {
 
   const [localStream, setLocalStream] = useState(null);
   const localVideoRef = useRef(null);
+
+  const socketRef = useRef(null)
 
   const peersRef = useRef({});
   const [remoteStreams, setRemoteStreams] = useState([]);
@@ -98,9 +101,9 @@ const Meeting = () => {
         `https://meetly-backend-1.onrender.com/api/meetings/${id}`
       );
 
-      if (!res.data || res.data.isLive===false) {
+      if (!res.data) {
         alert("Meeting not started yet");
-        navigate(`/class/${id}`);
+        navigate(`/`);
         return;
       }
 
@@ -122,7 +125,11 @@ const Meeting = () => {
 }, [id, navigate]);
 
 useEffect(() => {
-  const newSocket = io("https://meetly-backend-1.onrender.com");
+  const newSocket = io("https://meetly-backend-1.onrender.com",{
+    transports : ["polling"],
+  });
+
+  socketRef.current = newSocket;
 
   newSocket.on("all-users", (users) => {
       users.forEach(({ id }) => {
