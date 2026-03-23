@@ -21,7 +21,7 @@ const ClassChat = () => {
   const [classData, setClassData] = useState(null);
   const [meetingStarted, setMeetingStarted] = useState(false);
 
-  const [socket, setSocket] = useState(null);
+  
   const [messages, setMessages] = useState([]);
   const [participants, setParticipants] = useState([]);
   const [isNoticeMode, setIsNoticeMode] = useState(false);
@@ -41,7 +41,7 @@ const ClassChat = () => {
   });
 
 
-  socket.on("disconnect", () => {
+  socketRef.current.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
 
     for (const room in roomUsers) {
