@@ -259,7 +259,7 @@ useEffect(() => {
     return [
       ...prev,
       {
-        id: socket.id,
+        id: socketRef.current?.id,
         name: user.name,
         role: user.role,
         videoOn: true,
@@ -351,7 +351,8 @@ useEffect(() => {
 
 useEffect(() => {
   if (participants.length > 0 && !activeParticipant) {
-    setActiveParticipant(participants[0]);
+    const other = participants.find(p => p.name !== user.name);
+    setActiveParticipant(other || participants[0]);
   }
 }, [participants]);
 
@@ -420,25 +421,31 @@ useEffect(() => {
   
 
     // remote stream
-    peer.ontrack = (event) => {
-      setRemoteStreams((prev) => {
-        const exists = prev.find((p) => p.id === socketId);
-        if (exists) return prev;
-        return [...prev, { id: socketId, stream: event.streams[0] }];
-      });
-    };
+    // remote stream
+  peer.ontrack = (event) => {
+    console.log("🔥 Remote stream received from:", socketId);
+
+    setRemoteStreams((prev) => {
+      const exists = prev.find((p) => p.id === socketId);
+      if (exists) return prev;
+
+      return [...prev, { id: socketId, stream: event.streams[0] }];
+    });
+  };
 
     return peer;
   };
 
 
-  const displayUser = 
-    otherParticipants.length > 0 ? otherParticipants[0]
-      :{name: user.name,
-      videoOn: true,
-      audioOn,
-      isSelf: true}
-  ;
+  const displayUser = activeParticipant 
+  || participants.find(p => p.id !== socket?.id) 
+  || participants[0];
+
+  const remote = remoteStreams.find(
+    (u) => u.id === displayUser?.id
+  );
+
+  console.log("REMOTE STREAMS:", remoteStreams);
 
   
 
@@ -502,22 +509,18 @@ useEffect(() => {
 
                 ) : (
                   // ✅ OTHER USER VIDEO (WebRTC stream)
-                  remoteStreams.find((u) => u.id === displayUser?.id)?.stream ? (
+                  remote?.stream ? (
                     <video
                       autoPlay
                       playsInline
                       ref={(video) => {
-                        if (video) {
-                          const streamObj = remoteStreams.find(
-                            (u) => u.id === displayUser?.id
-                          );
-                          if (streamObj) video.srcObject = streamObj.stream;
+                        if (video && remote?.stream) {
+                          video.srcObject = remote.stream;
                         }
                       }}
                       className="w-full h-full object-cover"
                     />
-                  ): (
-                    // fallback if stream not ready
+                  ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <span className="text-lg">Connecting...</span>
                     </div>
