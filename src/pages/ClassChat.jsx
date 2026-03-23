@@ -103,16 +103,8 @@ const ClassChat = () => {
 
   //  CHAT
   newSocket.on("receive-message", (msg) => {
-    setMessages((prev) => {
-      const exists = prev.find(
-        (m) =>
-          m.content === msg.content &&
-          m.sender === msg.sender &&
-          m.time === msg.time
-      );
-
-      if (exists) return prev;
-      return [...prev, msg];
+    newSocket.on("receive-message", (msg) => {
+      setMessages((prev) => [...prev, msg]);
     });
   });
 
@@ -188,12 +180,12 @@ const handleSend = async (e) => {
 };
 
   const handlePostNotice = async () => {
-  if (!message.trim()) return;
+  if (!noticeText.trim()) return;
 
   const notice = {
     sender: user.name,
     role: "teacher",
-    content: message,
+    content: noticeText,
     time: new Date().toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
@@ -208,7 +200,7 @@ const handleSend = async (e) => {
 
   socketRef.current.emit("send-message", {
     meetingCode: id,
-    message: msg,
+    message: notice,
   });
 
   setMessage("");
