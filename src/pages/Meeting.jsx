@@ -97,7 +97,7 @@ const Meeting = () => {
         `https://meetly-backend-1.onrender.com/api/meetings/${id}`
       );
 
-      if (!res.data || res.data.isLive===false) {
+      if (!res.data) {
         alert("Meeting not started yet");
         navigate(`/class/${id}`);
         return;
