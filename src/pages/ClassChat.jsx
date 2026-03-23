@@ -70,8 +70,17 @@ const ClassChat = () => {
 
   //  CHAT
   newSocket.on("receive-message", (msg) => {
-    console.log("Received message:", msg);
-    setMessages((prev) => [...prev, msg]);
+    setMessages((prev) => {
+      const exists = prev.find(
+        (m) =>
+          m.content === msg.content &&
+          m.sender === msg.sender &&
+          m.time === msg.time
+      );
+
+      if (exists) return prev;
+      return [...prev, msg];
+    });
   });
 
   return () => newSocket.disconnect();
