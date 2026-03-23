@@ -34,7 +34,7 @@ const Meeting = () => {
   
   const [loading, setLoading] = useState(true);
 
-  
+  const [socket, setSocket] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [screenSharingUser, setScreenSharingUser] = useState(null);
 
@@ -168,7 +168,7 @@ useEffect(() => {
     }
   });
 
-  
+  setSocket(newSocket);
 
   newSocket.emit("join-room", {
     meetingCode: id,
@@ -293,7 +293,7 @@ const handleSendChat = (e) => {
     meetingCode: id,
     message: msg,
   });
-
+  
   setChatInput("");
 };
 
