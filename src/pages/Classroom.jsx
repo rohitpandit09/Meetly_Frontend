@@ -21,7 +21,7 @@ const Classroom = () => {
 
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState({});
 
   useEffect(() => {
     const fetchAssignments = async () => {
@@ -101,8 +101,8 @@ const Classroom = () => {
       formData.append("studentId", user.id);
       formData.append("studentName", user.name);
 
-      if (file) {
-        formData.append("file", file);
+      if (files[assignmentId]) {
+        formData.append("file", files[assignmentId]);
       }
 
       await axios.post(
@@ -120,7 +120,27 @@ const Classroom = () => {
         `https://meetly-backend-1.onrender.com/api/assignments/${id}`
       );
 
-      setAssignments(res.data);
+      setAssignments((prev) =>
+        prev.map((a) =>
+          a.id === assignmentId
+            ? {
+                ...a,
+                submissions: [
+                  ...a.submissions.filter(
+                    (s) => String(s.studentId) !== String(user.id)
+                  ),
+                  {
+                    studentId: user.id,
+                    studentName: user.name,
+                    submitted: true,
+                    time: new Date().toISOString(),
+                    late: false,
+                  },
+                ],
+              }
+            : a
+        )
+      );
       setFile(null);
 
     } catch (error) {
@@ -133,10 +153,11 @@ const Classroom = () => {
       <div className="max-w-5xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-3 mb-6">
-            <button onClick={() => navigate(`/class/${id}`)} className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground">
-              <ArrowLeft className="w-5 h-5" onClick={()=>{
-                navigate(-1);
-              }} />
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2 rounded-lg hover:bg-muted"
+            >
+              <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
               <h1 className="text-2xl font-bold font-display text-foreground">{id} — Classroom</h1>
@@ -170,7 +191,12 @@ const Classroom = () => {
                   <textarea required value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" rows={3} className="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
                   <input
                     type="file"
-                    onChange={(e) => setFile(e.target.files[0])}
+                    onChange={(e) =>
+                      setFiles((prev) => ({
+                        ...prev,
+                        [a.id]: e.target.files[0],
+                      }))
+                    }
                     className="w-full text-sm"
                   />
                   <input type="date" required value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
@@ -218,7 +244,7 @@ const Classroom = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {a.submissions.map((s) => (
+                          {(a.submissions || []).map((s) => (
                             <tr key={s.studentId} className="border-b border-border/50">
                               <td className="py-2.5 text-foreground">{s.studentName}</td>
                               <td className="py-2.5">
@@ -232,7 +258,7 @@ const Classroom = () => {
                                   <span className="flex items-center gap-1 text-destructive"><XCircle className="w-3 h-3" /> Not Submitted</span>
                                 )}
                               </td>
-                              <td className="py-2.5 text-muted-foreground">{s.time || "-"}</td>
+                              <td className="py-2.5 text-muted-foreground">{s.time ? new Date(s.time).toLocaleString() : "-"}</td>
                               <td>
                                 {s.fileName ? (
                                   <a
@@ -251,7 +277,7 @@ const Classroom = () => {
                     </div>
                   ) : (
                     <div>
-                      {a.submissions.find((s) => s.studentId === user.id)?.submitted ? (
+                      {a.submissions.find((s) => String(s.studentId) === String(user.id))?.submitted ? (
                         <p className="text-sm text-green-600 flex items-center gap-1">
                           <CheckCircle className="w-4 h-4" /> Submitted
                         </p>
