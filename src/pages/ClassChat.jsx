@@ -43,16 +43,8 @@ const ClassChat = () => {
   socketRef.current = newSocket;
 
 
-  socketRef.current.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-
-    for (const room in roomUsers) {
-      roomUsers[room] = roomUsers[room].filter(
-        (user) => user.id !== socket.id
-      );
-
-      io.to(room).emit("dashboard-users", roomUsers[room]);
-    }
+  newSocket.on("disconnect", () => {
+    console.log("❌ Socket disconnected");
   });
 
   // VERY IMPORTANT
@@ -105,9 +97,9 @@ const ClassChat = () => {
 
   //  CHAT
   newSocket.on("receive-message", (msg) => {
-    newSocket.on("receive-message", (msg) => {
+    
       setMessages((prev) => [...prev, msg]);
-    });
+    
   });
 
   return () => newSocket.disconnect();
@@ -205,7 +197,7 @@ const handleSend = async (e) => {
     message: notice,
   });
 
-  setMessage("");
+  setNoticeText("");
 };
 
   const copyCode = () => {
