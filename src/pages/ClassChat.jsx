@@ -53,16 +53,15 @@ const ClassChat = () => {
   newSocket.on("connect", () => {
     console.log("Socket connected:", newSocket.id);
 
-    // JOIN ROO
-  });
-
-  newSocket.emit("join-dashboard", {
+    // JOIN ROOM
+    newSocket.emit("join-dashboard", {
       meetingCode: id,
       user: {
         name: user?.name,
         role: user?.role,
       },
     });
+  });
 
   //  USERS UPDATE
   newSocket.on("dashboard-users", (users) => {
@@ -99,7 +98,7 @@ const ClassChat = () => {
   });
 
   return () => newSocket.disconnect();
-}, []);
+}, [id, user]);
 
   
   useEffect(() => {
@@ -235,8 +234,7 @@ const handleSend = async (e) => {
                   onClick={() => {
 
                     console.log('Button Clicked');
-
-                    if (!socketRef.current ) {
+                    if (!socketRef.current || !socketRef.current.connected) {
                       alert("Socket not connected yet. Please wait...");
                       return;
                     }

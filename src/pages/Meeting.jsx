@@ -28,7 +28,7 @@ const Meeting = () => {
   const [cameraStream, setCameraStream] = useState(null);
   const [screenStream, setScreenStream] = useState(null);
   const [timeLeft , setTimeLeft] = useState(null);  
-  
+  const [meetingData, setMeetingData] = useState(null);
 
   const [activePoll, setActivePoll] = useState(null);
 
