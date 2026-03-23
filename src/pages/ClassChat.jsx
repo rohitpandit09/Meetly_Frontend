@@ -40,6 +40,8 @@ const ClassChat = () => {
     forceNew : true
   });
 
+  socketRef.current = newSocket;
+
 
   socketRef.current.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
@@ -54,7 +56,7 @@ const ClassChat = () => {
   });
 
   // VERY IMPORTANT
-  socketRef.current = newSocket;
+  
 
   newSocket.on("connect", () => {
     console.log("✅ Socket connected:", newSocket.id);
