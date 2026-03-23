@@ -27,14 +27,14 @@ const Meeting = () => {
   const [cameraStream, setCameraStream] = useState(null);
   const [screenStream, setScreenStream] = useState(null);
   const [timeLeft , setTimeLeft] = useState(null);  
-  const [meetingStarted, setMeetingStarted] = useState(false);
+  
 
   const [activePoll, setActivePoll] = useState(null);
 
   
   const [loading, setLoading] = useState(true);
 
-  const [socket, setSocket] = useState(null);
+  
   const [participants, setParticipants] = useState([]);
   const [screenSharingUser, setScreenSharingUser] = useState(null);
 
@@ -168,7 +168,7 @@ useEffect(() => {
     }
   });
 
-  setSocket(newSocket);
+  
 
   newSocket.emit("join-room", {
     meetingCode: id,
@@ -289,7 +289,7 @@ const handleSendChat = (e) => {
     })
   };
 
-  socket.emit("send-message", {
+  socketRef.current.emit("send-message", {
     meetingCode: id,
     message: msg,
   });
