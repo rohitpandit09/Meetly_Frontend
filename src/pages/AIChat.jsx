@@ -10,16 +10,45 @@ const AIChat = () => {
   ]);
   const [input, setInput] = useState("");
 
-  const handleSend = (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-    const userMsg = input;
-    setMessages((p) => [...p, { role: "user", text: userMsg }]);
-    setInput("");
-    setTimeout(() => {
-      setMessages((p) => [...p, { role: "ai", text: `Thanks for your question! I'm a demo AI assistant. In production, I'd provide a helpful response to: "${userMsg}"` }]);
-    }, 800);
-  };
+  const handleSend = async (e) => {
+  e.preventDefault();
+  if (!input.trim()) return;
+
+  const userMsg = input;
+
+  // show user msg
+  setMessages((p) => [...p, { role: "user", text: userMsg }]);
+  setMessages((p) => [...p, { role: "ai", text: "Typing..." }]);
+  setInput("");
+
+  try {
+    const res = await fetch(
+      "https://meetly-backend-1.onrender.com/api/ai/chat",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: userMsg }),
+      }
+    );
+
+    const data = await res.json();
+
+    setMessages((p) => [
+      ...p,
+      { role: "ai", text: data.reply },
+    ]);
+
+  } catch (err) {
+    console.error(err);
+
+    setMessages((p) => [
+      ...p,
+      { role: "ai", text: "⚠️ AI failed. Try again." },
+    ]);
+  }
+};
 
   return (
     <div className="min-h-screen bg-background pt-20 px-4 pb-4 flex flex-col">
