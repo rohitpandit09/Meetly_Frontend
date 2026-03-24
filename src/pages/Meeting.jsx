@@ -122,7 +122,7 @@ useEffect(()=>{
       audioOn : true
     }
   })
-},[localStream])
+},[localStream, socketRef.current]);
 
 useEffect(() => {
   const newSocket = io("https://meetly-backend-1.onrender.com",{
@@ -184,6 +184,9 @@ useEffect(() => {
   
 
   newSocket.on("user-joined", ({ socketId, user }) => {
+    console.log("👤 New user joined:", socketId);
+
+    // ✅ ADD USER TO UI
     setParticipants((prev) => {
       const exists = prev.find((p) => p.id === socketId);
       if (exists) return prev;
@@ -197,6 +200,19 @@ useEffect(() => {
           audioOn: true,
         },
       ];
+    });
+
+    // 🔥🔥 THIS IS THE MAIN FIX
+    const peer = createPeer(socketId, newSocket);
+    peersRef.current[socketId] = peer;
+
+    peer.createOffer().then((offer) => {
+      peer.setLocalDescription(offer);
+
+      newSocket.emit("offer", {
+        to: socketId,
+        offer,
+      });
     });
   });
 
@@ -854,7 +870,7 @@ useEffect(() => {
 
           setVideoOn(track.enabled);
 
-          socket.emit("media-toggle", {
+          socket.emit("toggle-media", {
             meetingCode: id,
             userName: user.name,
             type: "video",
