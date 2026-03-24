@@ -108,21 +108,21 @@ const Meeting = () => {
   return () => socket.disconnect();
 }, [id]);
 
-useEffect(()=>{
-  if(!socketRef.current || !localStream) return;
+// useEffect(()=>{
+//   if(!socketRef.current || !localStream) return;
 
-  console.log("Joining room ");
+//   console.log("Joining room ");
 
-  socketRef.current.emit("join-room" ,{
-    meetingCode : id,
-    user :{
-      name : user?.name,
-      role : user?.role,
-      videoOn : true,
-      audioOn : true
-    }
-  })
-},[localStream, socketRef.current]);
+//   socketRef.current.emit("join-room" ,{
+//     meetingCode : id,
+//     user :{
+//       name : user?.name,
+//       role : user?.role,
+//       videoOn : true,
+//       audioOn : true
+//     }
+//   })
+// },[localStream, socketRef.current]);
 
 useEffect(() => {
   const newSocket = io("https://meetly-backend-1.onrender.com",{
@@ -131,6 +131,17 @@ useEffect(() => {
 
   newSocket.on("connect", () => {
     console.log("✅ SOCKET CONNECTED:", newSocket.id);
+
+    // 🔥 JOIN ROOM HERE
+    newSocket.emit("join-room", {
+      meetingCode: id,
+      user: {
+        name: user?.name,
+        role: user?.role,
+        videoOn: true,
+        audioOn: true,
+      },
+    });
   });
 
   socketRef.current = newSocket;
@@ -152,7 +163,6 @@ useEffect(() => {
       });
     });
   });
-
 
   newSocket.on("offer", async ({ from, offer }) => {
     const peer = createPeer(from, newSocket);
@@ -870,7 +880,7 @@ useEffect(() => {
 
           setVideoOn(track.enabled);
 
-          socket.emit("toggle-media", {
+          socketRef.current.emit("toggle-media", {
             meetingCode: id,
             userName: user.name,
             type: "video",
