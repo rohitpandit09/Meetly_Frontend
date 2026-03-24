@@ -17,8 +17,11 @@ const AIChat = () => {
   const userMsg = input;
 
   // show user msg
-  setMessages((p) => [...p, { role: "user", text: userMsg }]);
-  setMessages((p) => [...p, { role: "ai", text: "Typing..." }]);
+  setMessages((p) => {
+  const newMessages = [...p];
+    newMessages.pop(); // remove "Typing..."
+    return [...newMessages, { role: "ai", text: data.reply }];
+  });
   setInput("");
 
   try {
