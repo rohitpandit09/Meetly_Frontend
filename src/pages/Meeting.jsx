@@ -81,17 +81,7 @@ const Meeting = () => {
     }
 
     // ✅ ADD THIS HERE
-    if (socketRef.current) {
-      socketRef.current.emit("join-room", {
-        meetingCode: id,
-        user: {
-          name: user?.name,
-          role: user?.role,
-          videoOn: true,
-          audioOn: true,
-        },
-      });
-    }
+    
     };
 
     startCamera();
@@ -118,9 +108,29 @@ const Meeting = () => {
   return () => socket.disconnect();
 }, [id]);
 
+useEffect(()=>{
+  if(!socketRef.current || !localStream) return;
+
+  console.log("Joining room ");
+
+  socketRef.current.emit("join-room" ,{
+    meetingCode : id,
+    user :{
+      name : user?.name,
+      role : user?.role,
+      videoOn : true,
+      audioOn : true
+    }
+  })
+},[localStream])
+
 useEffect(() => {
   const newSocket = io("https://meetly-backend-1.onrender.com",{
     transports : ["polling"],
+  });
+
+  newSocket.on("connect", () => {
+    console.log("✅ SOCKET CONNECTED:", newSocket.id);
   });
 
   socketRef.current = newSocket;
