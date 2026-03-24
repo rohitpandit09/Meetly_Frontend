@@ -133,15 +133,7 @@ useEffect(() => {
     console.log("✅ SOCKET CONNECTED:", newSocket.id);
 
     // 🔥 JOIN ROOM HERE
-    newSocket.emit("join-room", {
-      meetingCode: id,
-      user: {
-        name: user?.name,
-        role: user?.role,
-        videoOn: true,
-        audioOn: true,
-      },
-    });
+    
   });
 
   socketRef.current = newSocket;
@@ -284,6 +276,22 @@ useEffect(() => {
 
   return () => newSocket.disconnect();
 }, [id, user]);
+
+useEffect(() => {
+  if (!localStream || !socketRef.current) return;
+
+  console.log("🚀 JOINING AFTER STREAM READY");
+
+  socketRef.current.emit("join-room", {
+    meetingCode: id,
+    user: {
+      name: user?.name,
+      role: user?.role,
+      videoOn: true,
+      audioOn: true,
+    },
+  });
+}, [localStream]);
 
 useEffect(() => {
   if (!socket || !user) return;
